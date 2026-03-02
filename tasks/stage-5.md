@@ -1,5 +1,7 @@
 # Stage 5 — Choose Your Feature Track
 
+> **Before you start:** Make sure Stage 4 is working — you can select tags when creating an entry, and the tags appear as colored chips on the card.
+
 ## Today's goal
 Add one significant new feature to the app — chosen based on your group's pace and interest.
 

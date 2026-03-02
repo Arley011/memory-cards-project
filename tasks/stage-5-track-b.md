@@ -25,7 +25,7 @@ String _searchQuery = '';
 ---
 
 ### Step 2: Add a computed filtered list
-Add a getter that returns entries matching the current query:
+Add a getter that returns entries matching the current query. Add this inside `_HomeScreenState`, before the `build` method:
 ```dart
 List<Entry> get _filteredEntries {
   if (_searchQuery.isEmpty) return _entries;
@@ -42,7 +42,7 @@ List<Entry> get _filteredEntries {
 ---
 
 ### Step 3: Add the search field to the UI
-Replace the `AppBar` title with a search-capable version. Add a `TextField` above the `ListView` — the simplest approach:
+This step requires restructuring the `body` of your `Scaffold`. Replace the **entire** `body:` value (both the empty state and the ListView) with a new structure that has the search field at the top:
 
 ```dart
 body: Column(
@@ -68,7 +68,7 @@ body: Column(
 ),
 ```
 
-Move the feed (ListView + empty state) into a separate method `_buildFeed()`:
+Now extract the feed into a separate method. Add this inside `_HomeScreenState`:
 ```dart
 Widget _buildFeed() {
   final entries = _filteredEntries;
@@ -101,17 +101,20 @@ Widget _buildFeed() {
 }
 ```
 
+> **Important:** Notice `_entries.indexOf(entries[index])` in the delete callback — we need the index in the **original** list, not the filtered list. Otherwise, deleting while searching would remove the wrong entry!
+
 ---
 
 ### Step 4: Verify it works
-- Type "Berlin" → only the "Arrived in Berlin" entry shows
+- Type "Gut Wehlitz" → only the arrival entry shows
 - Type a word from an entry's text → the entry still shows
 - Clear the search → all entries come back
+- Search for something that doesn't exist → "no results" message appears
 
 ---
 
 ## Optional extensions
-- Add a clear button (×) on the right of the search field that empties the query
+- Add a clear button (×) on the right of the search field (hint: add a `TextEditingController` and use `suffixIcon` with an `IconButton` that clears it)
 - Highlight the matched text in the results (hint: wrap the matching substring in a `TextSpan` with a yellow background)
 - Combine search with tag filters — show chips for each tag above the list, filter by both simultaneously
 - Add sort options: newest first / oldest first / alphabetical (hint: show a bottom sheet with `showModalBottomSheet`)

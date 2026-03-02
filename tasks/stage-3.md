@@ -1,5 +1,7 @@
 # Stage 3 — Persistence (Save Data Locally)
 
+> **Before you start:** Make sure Stage 2 is working — you can tap "+", fill in a title and text, tap "Save", and see the new entry appear in the feed.
+
 ## Today's goal
 Make entries survive app restarts by saving them to the device, and add the ability to delete entries.
 
@@ -21,7 +23,7 @@ We use `shared_preferences` — a simple key-value store that lives on the devic
 
 The whole entry list is stored under a single key `'entries'`, as a list of JSON strings:
 ```
-'entries' → ["{"id":"1","title":"Berlin",...}", "{"id":"2",...}"]
+'entries' → ["{"id":"1","title":"Arrived at Gut Wehlitz",...}", "{"id":"2",...}"]
 ```
 
 Each Entry is converted to/from JSON using the `toJson()` and `fromJson()` methods already in `entry.dart`.
@@ -59,13 +61,38 @@ Future<List<Entry>> loadEntries() async {
 
 ---
 
-### Step 3: Load entries when the app starts
+### Step 3: Switch from sample data to storage
 In `home_screen.dart`, add an import:
 ```dart
 import '../utils/storage.dart';
 ```
 
-Override `initState` to load entries when the screen first appears:
+Now change the `_entries` variable. Remove `final` (because we'll reassign it when loading from storage) and start with an empty list:
+```dart
+// Before (from Stage 1):
+final List<Entry> _entries = List.from(sampleEntries);
+
+// After:
+List<Entry> _entries = [];
+```
+
+> **Note:** You can keep the `import '../data/sample_entries.dart';` line — you'll need it again in Stage 4 for the tag list.
+
+---
+
+### Step 4: Save after every change
+Every time `_entries` changes, call `saveEntries`. In the FAB `onPressed` callback (where you add a new entry), add a save call right after the `setState`:
+```dart
+setState(() => _entries.insert(0, newEntry));
+saveEntries(_entries); // Save after adding
+```
+
+> **Note:** You don't need `await` here — the save can happen in the background while the UI updates.
+
+---
+
+### Step 5: Load entries when the app starts
+Override `initState` to load entries when the screen first appears. Add this inside `_HomeScreenState`, before the `build` method:
 ```dart
 @override
 void initState() {
@@ -79,42 +106,18 @@ Future<void> _loadFromStorage() async {
 }
 ```
 
-**Important:** Remove the hardcoded `sampleEntries` from `_entries` — replace with an empty list:
-```dart
-List<Entry> _entries = [];
-```
+Now test it: run the app, create an entry, **close the app completely** (stop it in the terminal), then run it again. Your entry should still be there!
 
-Run the app — on first launch you'll see the empty state (no entries saved yet). Create one, close the app, reopen it — the entry should still be there!
+> **Note:** Any entries you created in Stage 2 won't appear — they were only in memory and never saved to storage. Create new ones and they'll persist from now on.
 
 > **Hint:** `initState` runs once when the widget is inserted into the widget tree.
 
 ---
 
-### Step 4: Save after every change
-Every time `_entries` changes, call `saveEntries`. Find the places where you call `setState` and add a save call after each one.
+### Step 6: Add delete
+Add a long-press handler to the `EntryCard` widget so users can delete entries.
 
-In the FAB `onPressed` (where you add a new entry):
-```dart
-setState(() => _entries.insert(0, newEntry));
-saveEntries(_entries); // Save after adding
-```
-
-> **Note:** You don't need `await` here — the save can happen in the background while the UI updates.
-
----
-
-### Step 5: Add delete
-Add a long-press handler to the `EntryCard` widget or wrap the card in a `GestureDetector`.
-
-In `home_screen.dart`, pass a delete callback to `EntryCard`:
-```dart
-EntryCard(
-  entry: _entries[index],
-  onDelete: () => _deleteEntry(index),
-)
-```
-
-Add the callback parameter to `EntryCard`:
+**In `entry_card.dart`**, add a callback parameter to `EntryCard`:
 ```dart
 final VoidCallback? onDelete;
 const EntryCard({super.key, required this.entry, this.onDelete});
@@ -124,11 +127,19 @@ Wrap the `Card` with `GestureDetector`:
 ```dart
 GestureDetector(
   onLongPress: onDelete,
-  child: Card(...),
+  child: Card(...),  // your existing Card widget
 )
 ```
 
-Add the delete method in `_HomeScreenState`:
+**In `home_screen.dart`**, pass a delete callback when creating `EntryCard`:
+```dart
+EntryCard(
+  entry: _entries[index],
+  onDelete: () => _deleteEntry(index),
+)
+```
+
+Add the `_deleteEntry` method in `_HomeScreenState`:
 ```dart
 void _deleteEntry(int index) async {
   final confirm = await showDialog<bool>(

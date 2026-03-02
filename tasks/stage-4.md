@@ -1,5 +1,7 @@
 # Stage 4 — Tags + Better Usability
 
+> **Before you start:** Make sure Stage 3 is working — entries persist after restarting the app, and you can delete entries with a long-press.
+
 ## Today's goal
 Add category tags to entries, display them as colored chips on each card, and clean up the overall visual quality of the app.
 
@@ -24,7 +26,7 @@ const List<String> availableTags = [
 ];
 ```
 
-Import it in `create_entry_screen.dart`:
+Import it in `create_entry_screen.dart` (if you don't already have this import):
 ```dart
 import '../data/sample_entries.dart';
 ```
@@ -42,7 +44,7 @@ We use a `Set` instead of a `List` because a Set automatically prevents duplicat
 ---
 
 ### Step 3: Show tag chips in the form
-Add a section below the text field in the form:
+Add this inside the `children` list in your form's `Column`, below the date picker button:
 
 ```dart
 const SizedBox(height: 16),
@@ -112,7 +114,7 @@ if (entry.tags.isNotEmpty) ...[
 ],
 ```
 
-Add a helper method inside `EntryCard`:
+Add this helper method inside the `EntryCard` class, before the `build` method:
 ```dart
 Color _tagColor(String tag) {
   const colors = {
@@ -126,6 +128,10 @@ Color _tagColor(String tag) {
   return colors[tag] ?? Colors.grey;
 }
 ```
+
+---
+
+> **Note:** Entries you created before Stage 4 won't show any tags — that's normal. Only new entries will have tags.
 
 ---
 
@@ -143,7 +149,7 @@ Go through the app and improve visual consistency:
 - Show a "no results" empty state when the filter returns nothing
 - Let the user create a custom tag by typing a name (hint: add a `TextField` + button next to the chips)
 - Add tag colors that are visible in both light and dark mode
-- Add animated transitions when chips are selected/deselected
+- Show a count of selected tags next to the "Tags" label (e.g. "Tags (2 selected)")
 
 ---
 

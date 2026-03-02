@@ -21,6 +21,7 @@ dependencies:
 
   # Local notifications  (used in Stage 5, Track C)
   flutter_local_notifications: ^18.0.0
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:

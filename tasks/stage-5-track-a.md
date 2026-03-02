@@ -29,24 +29,26 @@ The Create Entry screen has an "Add Photo" button. When tapped, the device galle
 <string>We need access to your photo library to attach images to your memories.</string>
 ```
 
+> **Note:** `READ_MEDIA_IMAGES` works on Android 13+. If you're testing on an older Android version, use `READ_EXTERNAL_STORAGE` instead.
+
 ---
 
 ### Step 2: Add state for the image
-In `_CreateEntryScreenState`, add:
+In `_CreateEntryScreenState`, add this next to the other state variables (controllers, date, tags):
 ```dart
 String? _imagePath;
 ```
 
 ---
 
-### Step 3: Add the photo picker button
-Import at the top of `create_entry_screen.dart`:
+### Step 3: Add the photo picker
+Add these imports at the top of `create_entry_screen.dart`:
 ```dart
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 ```
 
-Add a method to pick a photo:
+Add a method to pick a photo inside `_CreateEntryScreenState`, before the `build` method:
 ```dart
 Future<void> _pickPhoto() async {
   final picker = ImagePicker();
@@ -60,7 +62,7 @@ Future<void> _pickPhoto() async {
 }
 ```
 
-Add the button + preview to the form body:
+Add the button + preview inside the `children` list in your form's `Column`, after the tag chips (or after the date picker if you skipped Stage 4):
 ```dart
 const SizedBox(height: 16),
 if (_imagePath != null)
@@ -104,12 +106,16 @@ final newEntry = Entry(
 ---
 
 ### Step 5: Show thumbnail on the card
-In `entry_card.dart`, add the photo at the top of the `Column`:
-
+In `entry_card.dart`, add the import at the top:
 ```dart
-if (entry.imagePath != null)
+import 'dart:io';
+```
+
+Now add the photo above the title inside the `Column`'s `children` list (as the first item, before the title `Text` or `Row`):
+```dart
+if (entry.imagePath != null) ...[
   ClipRRect(
-    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+    borderRadius: BorderRadius.circular(8),
     child: Image.file(
       File(entry.imagePath!),
       height: 160,
@@ -117,12 +123,11 @@ if (entry.imagePath != null)
       fit: BoxFit.cover,
     ),
   ),
+  const SizedBox(height: 8),
+],
 ```
 
-Add the import at the top of `entry_card.dart`:
-```dart
-import 'dart:io';
-```
+> **Note:** The image will be slightly inset because it's inside the card's `Padding`. That's fine! If you want an edge-to-edge image, you would need to restructure the card layout — try this as a challenge if you finish early.
 
 ---
 
