@@ -1,0 +1,33 @@
+name: memory_cards
+description: Memory Cards – A Visual Journal Flutter app (course project).
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Date formatting  (used from Stage 1)
+  intl: ^0.20.0
+
+  # Local storage  (used from Stage 3)
+  shared_preferences: ^2.3.0
+
+  # Photo attachment  (used in Stage 5, Track A)
+  image_picker: ^1.1.0
+
+  # Local notifications  (used in Stage 5, Track C)
+  flutter_local_notifications: ^18.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
