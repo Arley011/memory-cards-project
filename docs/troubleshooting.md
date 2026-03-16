@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common problems and how to fix them. Start with the error message in the VS Code terminal or the Problems panel.
+Common problems and how to fix them. Start with the error message in the Android Studio terminal (bottom panel) or the Dart Analysis panel.
 
 ---
 
@@ -47,12 +47,12 @@ Common problems and how to fix them. Start with the error message in the VS Code
 
 ---
 
-### 4. VS Code shows "No device detected" / "No devices found"
+### 4. IDE shows "No device detected" / "No devices found"
 
-**Symptom:** Flutter icon in VS Code shows no devices, or `flutter run` says "No supported devices connected".
+**Symptom:** Device selector in Android Studio shows no devices, or `flutter run` says "No supported devices connected".
 
 **Fix:**
-1. **Start the emulator first** — it must be fully booted before VS Code detects it
+1. **Start the emulator first** — it must be fully booted before Android Studio detects it
 2. Wait for the emulator to reach the home screen (can take 1–2 minutes on first boot)
 3. If using a physical device: check USB debugging is enabled (see setup guide)
 4. Run `flutter devices` in the terminal to see what Flutter can see
@@ -97,7 +97,7 @@ If that doesn't work:
 **Fix:**
 1. This happens after adding a new package that has native code
 2. **Hot reload is not enough** — you need a **full restart**
-3. Stop the app completely (`q` in terminal or Stop in VS Code)
+3. Stop the app completely (`q` in terminal or the Stop button in the IDE)
 4. Run `flutter run` again
 
 If still failing:
@@ -140,7 +140,7 @@ flutter run
 
 **When hot reload works:** Changes to `build()` methods, widget properties, styling, text.
 
-**When you need hot restart** (press `R` in terminal or the restart button in VS Code):
+**When you need hot restart** (press `R` in terminal or the restart button in the IDE toolbar):
 - You added a new `initState()` method
 - You changed `main()` or app initialization code
 - You added a new package

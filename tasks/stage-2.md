@@ -1,10 +1,26 @@
 # Stage 2 — Create Entry Flow
 
-## Today's goal
+## Goal
 Add a "Create Entry" screen, connect it to the feed, and make new entries appear in the list immediately.
 
 ## What the app will look like at the end
 Tapping the "+" button opens a new screen with a title field, a text field, and a date selector. Tapping "Save" closes the screen and the new entry appears at the top of the feed.
+
+### How the screens connect
+
+```
+  HomeScreen                          CreateEntryScreen
+  ┌──────────┐    Navigator.push     ┌──────────────────┐
+  │          │ ────────────────────→  │                  │
+  │  Feed    │                       │  Title field     │
+  │  list    │    Navigator.pop      │  Text field      │
+  │          │ ←──────────────────── │  Date picker     │
+  │  + FAB   │   (returns Entry)     │  Save button     │
+  └──────────┘                       └──────────────────┘
+       │
+       ↓
+  setState() → new entry appears at top of list
+```
 
 ## Minimum required outcome (checkpoint)
 - [ ] Tapping "+" opens the Create Entry screen
@@ -27,6 +43,9 @@ Copy the following code into the new file:
 import 'package:flutter/material.dart';
 import '../models/entry.dart';
 
+// There are 2 main types of widgets in Flutter: StatefulWidget and StatelessWidget.
+// StatelessWidget draws UI using only the data passed to it — it cannot change.
+// StatefulWidget can hold data (state) that changes over time, like form inputs.
 class CreateEntryScreen extends StatefulWidget {
   const CreateEntryScreen({super.key});
 
@@ -34,11 +53,16 @@ class CreateEntryScreen extends StatefulWidget {
   State<CreateEntryScreen> createState() => _CreateEntryScreenState();
 }
 
+// This is the State class — it holds the mutable data for the widget above.
+// When you call setState(), Flutter calls build() again to redraw the screen.
 class _CreateEntryScreenState extends State<CreateEntryScreen> {
   // TODO: add controllers and state here
 
   @override
   Widget build(BuildContext context) {
+    // build() defines what this screen looks like.
+    // It is called every time setState() is invoked.
+    // Scaffold provides the basic app structure: AppBar at the top + body area.
     return Scaffold(
       appBar: AppBar(title: const Text('New Memory')),
       body: const Center(child: Text('Form goes here')),
@@ -47,7 +71,7 @@ class _CreateEntryScreenState extends State<CreateEntryScreen> {
 }
 ```
 
-> **Tip:** In VS Code, right-click the `lib/screens/` folder in the sidebar → **New File** → type `create_entry_screen.dart`.
+> **Tip:** In Android Studio, right-click the `lib/screens/` folder in the Project panel → **New** → **Dart File** → type `create_entry_screen`.
 
 ---
 
@@ -73,6 +97,8 @@ void dispose() {
 }
 ```
 
+> **Why dispose?** Controllers use system resources (like memory). The `dispose()` method is called when the screen is closed — it's the right place to clean up. If you skip this, the app will still work, but it's a bad habit that can cause issues in larger apps.
+>
 > **Reference:** [../examples/04_forms/form_demo.dart](../examples/04_forms/form_demo.dart)
 
 ---
@@ -106,7 +132,7 @@ body: Padding(
 ),
 ```
 
-Save and hot reload — you should see two input fields on the screen.
+You should now see two input fields on the screen.
 
 ---
 
@@ -136,11 +162,11 @@ TextButton.icon(
 ),
 ```
 
-Save and try it — tapping the date button should open a calendar picker.
+Try it — tapping the date button should open a calendar picker.
 
 ---
 
-### Step 5: Save and return
+### Step 5: Add a Save button
 Add a save button to the `AppBar`. Change the `appBar` line to:
 ```dart
 appBar: AppBar(
@@ -180,27 +206,34 @@ void _save() {
 ---
 
 ### Step 6: Connect the screens
-Now we need to make the "+" button in `home_screen.dart` open the new screen.
+Now we need to make the "+" button in `home_screen.dart` open the new screen and handle the result.
 
-1. Add this import at the top of `home_screen.dart` (both files are in the same `screens/` folder, so no `../` is needed):
-```dart
-import 'create_entry_screen.dart';
-```
+You'll need to import the `CreateEntryScreen` class. Since both files are in the same `screens/` folder, the import path is simple — type `CreateEntryScreen` in your code and press **Alt+Enter** to let Android Studio add the import for you.
 
-2. Find the `onPressed` callback on the `FloatingActionButton`. Replace the **entire callback** (including the commented-out example code) with:
+Create a new method `_openCreateScreen()` in `_HomeScreenState` that:
+1. Uses `Navigator.push` to open `CreateEntryScreen`
+2. Waits (`await`) for the result — Navigator.push returns the value passed to `Navigator.pop`
+3. If the result is not null, inserts the new entry at position 0 in `_entries` using `setState`
+
+Here's the structure:
 ```dart
-onPressed: () async {
+Future<void> _openCreateScreen() async {
   final newEntry = await Navigator.push<Entry>(
     context,
     MaterialPageRoute(builder: (_) => const CreateEntryScreen()),
   );
   if (newEntry != null) {
-    setState(() => _entries.insert(0, newEntry)); // Insert at the top
+    setState(() => _entries.insert(0, newEntry));
   }
-},
+}
 ```
 
-> **Important:** Notice the `async` keyword after `()` — this is required because `await` pauses the code until the Create screen closes and returns a result.
+Then update the `FloatingActionButton`'s `onPressed` to call this method:
+```dart
+onPressed: _openCreateScreen,
+```
+
+> **Why a separate method?** Keeping navigation logic out of the `build` method makes code easier to read and maintain. The `build` method should focus on describing the UI, while methods like `_openCreateScreen` handle actions.
 
 > **Reference:** [../examples/03_navigation/](../examples/03_navigation/) — see how Screen A opens Screen B and gets a value back
 
@@ -212,10 +245,14 @@ onPressed: () async {
 - Format the date button using `DateFormat` from the `intl` package instead of the manual `day/month/year` format
 - Add a character counter below the title field (hint: use `_titleController.addListener`)
 - Sort the feed newest-first after every save (hint: `_entries.sort((a, b) => b.date.compareTo(a.date))`)
+- Extract the date picker `onPressed` callback into a separate `_pickDate()` method (same pattern as `_save` — keeps the build method clean)
+- Customize the `TextField` decoration: try adding `hintText`, a `prefixIcon` (e.g. `Icon(Icons.title)`), or changing the border style
+- Add validation for the text field too — show a different message if the text body is empty (hint: don't block saving, just show a warning)
+- Try replacing `TextButton` save button with `ElevatedButton` or `FilledButton` — which style do you prefer?
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|

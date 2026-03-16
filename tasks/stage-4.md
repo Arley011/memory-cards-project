@@ -1,8 +1,8 @@
 # Stage 4 — Tags + Better Usability
 
-> **Before you start:** Make sure Stage 3 is working — entries persist after restarting the app, and you can delete entries with a long-press.
+> **Before you start:** Make sure Stage 3 is working — entries persist after restarting the app, and you can delete entries by swiping.
 
-## Today's goal
+## Goal
 Add category tags to entries, display them as colored chips on each card, and clean up the overall visual quality of the app.
 
 ## What the app will look like at the end
@@ -13,6 +13,17 @@ When creating an entry, the user can select one or more tags (Travel, Food, Eras
 - [ ] Selected tags are saved with the entry
 - [ ] Tags appear as chips/labels on the entry card
 - [ ] The overall spacing and typography is consistent throughout the app
+
+### How tags flow through the app
+
+```
+CreateEntryScreen            Entry model             EntryCard
+┌─────────────────┐      ┌──────────────────┐     ┌─────────────────┐
+│  FilterChip     │      │                  │     │                 │
+│  taps toggle    │ ──→  │  tags: ['Travel', │ ──→ │  Chip widgets   │
+│  _selectedTags  │      │         'Food']  │     │  with colors    │
+└─────────────────┘      └──────────────────┘     └─────────────────┘
+```
 
 ---
 
@@ -26,10 +37,7 @@ const List<String> availableTags = [
 ];
 ```
 
-Import it in `create_entry_screen.dart` (if you don't already have this import):
-```dart
-import '../data/sample_entries.dart';
-```
+You'll need access to the `availableTags` list from `sample_entries.dart`. Type `availableTags` in your code and press **Alt+Enter** to let Android Studio add the import.
 
 ---
 
@@ -46,34 +54,33 @@ We use a `Set` instead of a `List` because a Set automatically prevents duplicat
 ### Step 3: Show tag chips in the form
 Add this inside the `children` list in your form's `Column`, below the date picker button:
 
+Start with a `SizedBox(height: 16)`, a bold `Text('Tags')` label, and another `SizedBox(height: 8)` for spacing.
+
+Then add a `Wrap` widget. `Wrap` is like `Row`, but it wraps to the next line when the chips don't fit. Inside `Wrap`, use `availableTags.map((tag) { ... }).toList()` to create a `FilterChip` for each tag.
+
+> **What does `.map().toList()` do?** `.map((item) { return Widget(...); })` transforms each item in a list into something else (here, into a widget). `.toList()` converts the result back into a regular List, which Flutter needs.
+
+Here are the key `FilterChip` properties you need to set:
+- `label: Text(tag)` — the text shown on the chip
+- `selected: _selectedTags.contains(tag)` — whether this chip is highlighted
+- `onSelected: (selected) { ... }` — callback when tapped
+
+> **Hint:** Inside `onSelected`, use `setState` to either `_selectedTags.add(tag)` or `_selectedTags.remove(tag)` based on the `selected` parameter.
+
+Here is the structure to guide you:
+
 ```dart
-const SizedBox(height: 16),
-const Text('Tags', style: TextStyle(fontWeight: FontWeight.bold)),
-const SizedBox(height: 8),
 Wrap(
   spacing: 8,
   children: availableTags.map((tag) {
-    final isSelected = _selectedTags.contains(tag);
     return FilterChip(
-      label: Text(tag),
-      selected: isSelected,
-      onSelected: (selected) {
-        setState(() {
-          if (selected) {
-            _selectedTags.add(tag);
-          } else {
-            _selectedTags.remove(tag);
-          }
-        });
-      },
+      // set label, selected, and onSelected here
     );
   }).toList(),
 ),
 ```
 
 `FilterChip` is a chip that can be toggled on/off — perfect for multi-select.
-
-> **Hint:** `Wrap` is like `Row`, but it wraps to the next line when the chips don't fit.
 
 ---
 
@@ -93,28 +100,20 @@ final newEntry = Entry(
 ---
 
 ### Step 5: Display tags on the card
-Open `lib/widgets/entry_card.dart` and replace the `// TODO Stage 4` comment with:
+Open `lib/widgets/entry_card.dart`. The goal is to show the selected tags as small colored chips below the text preview on each card.
 
-```dart
-if (entry.tags.isNotEmpty) ...[
-  const SizedBox(height: 8),
-  Wrap(
-    spacing: 4,
-    runSpacing: 4,
-    children: entry.tags.map((tag) {
-      return Chip(
-        label: Text(tag, style: const TextStyle(fontSize: 12)),
-        padding: EdgeInsets.zero,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        backgroundColor: _tagColor(tag).withOpacity(0.2),
-        side: BorderSide(color: _tagColor(tag), width: 1),
-      );
-    }).toList(),
-  ),
-],
-```
+Replace the `// TODO Stage 4` comment with code that conditionally shows the tags.
 
-Add this helper method inside the `EntryCard` class, before the `build` method:
+In Dart, `if (condition) ...[widget1, widget2]` lets you conditionally add multiple widgets to a list. The `...` (spread operator) unpacks the inner list into the outer one.
+
+Here is what you need to do:
+- Use `if (entry.tags.isNotEmpty) ...[...]` to only show tags when they exist
+- Inside, add a `SizedBox(height: 8)` for spacing, then a `Wrap` widget with `spacing: 4` and `runSpacing: 4`
+- Map each tag to a `Chip` widget (similar to how you used `.map().toList()` in Step 3)
+- Use `backgroundColor: _tagColor(tag).withOpacity(0.2)` and `side: BorderSide(color: _tagColor(tag))` on the `Chip` for a subtle colored look
+
+Create a `_tagColor(String tag)` helper method inside the `EntryCard` class (before the `build` method) that returns a `Color` based on the tag name. Use a `Map` to associate each tag with a color:
+
 ```dart
 Color _tagColor(String tag) {
   const colors = {
@@ -147,13 +146,19 @@ Go through the app and improve visual consistency:
 ## Optional extensions
 - Add filter chips on the home screen to show only entries with a specific tag
 - Show a "no results" empty state when the filter returns nothing
-- Let the user create a custom tag by typing a name (hint: add a `TextField` + button next to the chips)
 - Add tag colors that are visible in both light and dark mode
 - Show a count of selected tags next to the "Tags" label (e.g. "Tags (2 selected)")
+- Try using `ChoiceChip` instead of `FilterChip` on the create screen — what's the difference? When would you use each?
+- **Custom tag creation (big challenge):** Let the user create their own tags on-the-fly in the Create Entry screen. This requires:
+  - Storing the custom tags list persistently (another SharedPreferences key, or extend the storage helper)
+  - A `TextField` + "Add" button next to the chip list for entering a new tag name
+  - Validation: tag name cannot be empty, max length ~20 characters, no duplicate names
+  - Color selection for the new tag: use a predefined palette of ~10 colors to choose from, or explore a color picker package
+  - Update the `_tagColor` helper to handle custom tags too
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|

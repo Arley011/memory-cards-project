@@ -2,11 +2,11 @@
 
 > **Before you start:** Make sure Stage 2 is working — you can tap "+", fill in a title and text, tap "Save", and see the new entry appear in the feed.
 
-## Today's goal
+## Goal
 Make entries survive app restarts by saving them to the device, and add the ability to delete entries.
 
 ## What the app will look like at the end
-Closing and reopening the app shows the same entries as before. Long-pressing a card shows a delete confirmation dialog. After deleting, the entry is gone — even after restart.
+Closing and reopening the app shows the same entries as before. Swiping a card to the left shows a red delete background and a confirmation dialog. After deleting, the entry is gone — even after restart.
 
 ## Minimum required outcome (checkpoint)
 - [ ] Entries are saved automatically every time the list changes
@@ -27,6 +27,24 @@ The whole entry list is stored under a single key `'entries'`, as a list of JSON
 ```
 
 Each Entry is converted to/from JSON using the `toJson()` and `fromJson()` methods already in `entry.dart`.
+
+### How persistence works
+
+```
+App starts
+    │
+    ↓
+loadEntries()  →  SharedPreferences  →  _entries list  →  UI shows cards
+                    (device storage)
+
+User creates entry
+    │
+    ├──→ _entries.insert()  →  setState()  →  UI updates instantly
+    │
+    └──→ saveEntries()  →  SharedPreferences  →  saved to device
+
+App restarts  →  loadEntries()  →  same data is back!
+```
 
 ---
 
@@ -62,10 +80,7 @@ Future<List<Entry>> loadEntries() async {
 ---
 
 ### Step 3: Switch from sample data to storage
-In `home_screen.dart`, add an import:
-```dart
-import '../utils/storage.dart';
-```
+You'll need to import the storage functions you just created. Type `loadEntries` in your code and press **Alt+Enter** — Android Studio will suggest the correct import.
 
 Now change the `_entries` variable. Remove `final` (because we'll reassign it when loading from storage) and start with an empty list:
 ```dart
@@ -114,66 +129,74 @@ Now test it: run the app, create an entry, **close the app completely** (stop it
 
 ---
 
-### Step 6: Add delete
-Add a long-press handler to the `EntryCard` widget so users can delete entries.
+### Step 6: Add delete with swipe
 
-**In `entry_card.dart`**, add a callback parameter to `EntryCard`:
-```dart
-final VoidCallback? onDelete;
-const EntryCard({super.key, required this.entry, this.onDelete});
-```
+Flutter has a built-in widget called `Dismissible` that lets users swipe items to delete them — much more intuitive than a long-press!
 
-Wrap the `Card` with `GestureDetector`:
-```dart
-GestureDetector(
-  onLongPress: onDelete,
-  child: Card(...),  // your existing Card widget
-)
-```
+**In `home_screen.dart`**, wrap the `EntryCard` inside the `ListView.builder`'s `itemBuilder` with a `Dismissible` widget:
 
-**In `home_screen.dart`**, pass a delete callback when creating `EntryCard`:
 ```dart
-EntryCard(
-  entry: _entries[index],
-  onDelete: () => _deleteEntry(index),
-)
-```
-
-Add the `_deleteEntry` method in `_HomeScreenState`:
-```dart
-void _deleteEntry(int index) async {
-  final confirm = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Delete entry?'),
-      content: const Text('This cannot be undone.'),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-        TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
-      ],
-    ),
-  );
-  if (confirm == true) {
+Dismissible(
+  // Each Dismissible needs a unique key so Flutter knows which item is being swiped
+  key: ValueKey(_entries[index].id),
+  // Only allow swiping from right to left
+  direction: DismissDirection.endToStart,
+  // The red background that appears when swiping
+  background: Container(
+    color: Colors.red,
+    alignment: Alignment.centerRight,
+    padding: const EdgeInsets.only(right: 16),
+    child: const Icon(Icons.delete, color: Colors.white),
+  ),
+  // Ask for confirmation before actually deleting
+  confirmDismiss: (direction) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete entry?'),
+        content: const Text('This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    ) ?? false;
+  },
+  // This runs after the user confirms deletion
+  onDismissed: (direction) {
     setState(() => _entries.removeAt(index));
     saveEntries(_entries);
-  }
-}
+  },
+  child: EntryCard(entry: _entries[index]),
+)
 ```
+
+> **Why `ValueKey`?** When you swipe an item, Flutter needs to know exactly which widget is being removed. The `key` parameter gives each `Dismissible` a unique identity — we use the entry's `id` for this.
+
+> **What is `confirmDismiss`?** It's a callback that must return `true` (proceed with delete) or `false` (cancel). We use `showDialog` to ask the user first. The `?? false` at the end means "if the dialog is dismissed without a choice, treat it as cancel."
 
 > **Reference:** [../examples/06_list_crud/list_crud_demo.dart](../examples/06_list_crud/list_crud_demo.dart)
 
 ---
 
 ## Optional extensions
-- Show a `SnackBar` with an "Undo" action after deleting (restore the entry if the user taps Undo)
-- Add swipe-to-delete using the `Dismissible` widget (see `examples/06_list_crud`)
+- Show a `SnackBar` with an "Undo" action after deleting — restore the entry if the user taps Undo before the SnackBar disappears
 - Add a "Clear all" button in the AppBar with a confirmation dialog
 - Show a loading indicator (`CircularProgressIndicator`) while entries are being loaded from storage
-- Improve the Entry model: ensure the `id` is truly unique even if two entries are created within the same millisecond
+- **Add to favorites (challenge):** Use `Dismissible` with `DismissDirection.horizontal` to support swiping in **both** directions — swiping right-to-left deletes (red background, delete icon), swiping left-to-right toggles a "favorite" status (gold/yellow background, star icon). To make this work you will need to:
+  - Add an `isFavorite` field to the `Entry` model (don't forget `toJson`, `fromJson`, and `copyWith`)
+  - Show a small star icon on favorited cards
+  - Explore how `confirmDismiss` can return `false` to prevent the item from being removed (for the favorite action — you want to keep the card, just toggle the flag)
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|
@@ -185,6 +208,7 @@ void _deleteEntry(int index) async {
 | `initState()` | Called once when a StatefulWidget is first created |
 | `Future<T>` | A value that will be available in the future (async result) |
 | `async` / `await` | Write async code that reads like normal code |
-| `GestureDetector` | Detects taps, long-presses, swipes on any widget |
+| `Dismissible` | Wraps a widget to make it swipeable (for delete, archive, etc.) |
+| `ValueKey(value)` | Gives a widget a unique identity — required by `Dismissible` |
 | `showDialog(...)` | Shows a modal dialog and returns a value when closed |
 | `AlertDialog` | A standard confirm/cancel dialog |

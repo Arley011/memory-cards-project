@@ -2,14 +2,14 @@
 
 > **Before you start:** Make sure Stage 4 is working — you can select tags when creating an entry, and the tags appear as colored chips on the card.
 
-## Today's goal
+## Goal
 Add one significant new feature to the app — chosen based on your group's pace and interest.
 
 ---
 
 ## The three tracks
 
-Your mentor will tell you which track the group is doing today. Each track adds a different feature to the app.
+Your mentor will tell you which track the group is doing. Each track adds a different feature to the app.
 
 ---
 
@@ -39,4 +39,4 @@ A Settings screen lets the user turn on/off a daily notification. The notificati
 
 ## Checkpoint outcome
 
-Whichever track you do, at the end of the day the app should have a **working, visible new feature** that you can demonstrate. It doesn't need to be perfect — it needs to work.
+Whichever track you do, by the end of this stage the app should have a **working, visible new feature** that you can demonstrate. It doesn't need to be perfect — it needs to work.

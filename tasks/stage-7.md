@@ -2,7 +2,7 @@
 
 > **Before you start:** Make sure your app runs without crashes. You should be able to create an entry, close the app, reopen it, and see the entry still there.
 
-## Today's goal
+## Goal
 Build a release APK you can install on your phone, push your project to GitHub, and present your app to the group.
 
 ---
@@ -95,7 +95,7 @@ git push -u origin main
 
 Go back to github.com and refresh the page — your project files should be there!
 
-> **Authentication:** GitHub will ask you to log in. The easiest way is to use the browser prompt from VS Code. If it asks for a password in the terminal, you need a **Personal Access Token** — see [docs/git-basics.md](../docs/git-basics.md) for instructions.
+> **Authentication:** GitHub will ask you to log in. If it opens a browser prompt, follow the instructions there. If it asks for a password in the terminal, you need a **Personal Access Token** — see [docs/git-basics.md](../docs/git-basics.md) for instructions.
 
 > **Reference:** [../docs/git-basics.md](../docs/git-basics.md) for a quick reminder of what each command does.
 
@@ -118,9 +118,9 @@ There's no right or wrong here — show what you built.
 
 Think about these questions (you don't have to answer all of them — just the ones that feel relevant):
 
-- **What was the hardest part this week?**
+- **What was the hardest part of the course?**
 - **What surprised you most about Flutter or programming?**
-- **What would you add next if you had one more day?**
+- **What would you add next if you had more time?**
 - **Did anything feel satisfying — a moment when something finally worked?**
 
 ---
@@ -131,6 +131,8 @@ Think about these questions (you don't have to answer all of them — just the o
 - Add a "Favorites" feature — a star button on the card, filtered list view
 - Group entries by month in the feed (hint: `ListView` with custom headers)
 - Add an export feature — share the text of an entry via the device's share sheet (first run `flutter pub add share_plus`, then use `Share.share(text)`)
+- Add a splash screen with the app name (hint: a simple `Scaffold` with centered `Text` that navigates to `HomeScreen` after 2 seconds using `Future.delayed`)
+- Add entry statistics: total entries, entries this month, most used tag — show them on a new screen or in the AppBar
 
 ---
 

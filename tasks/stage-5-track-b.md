@@ -1,6 +1,6 @@
 # Stage 5 — Track B: Search & Discovery
 
-## Today's goal
+## Goal
 Add a search bar to the home screen so users can filter entries by title or text.
 
 ## What the app will look like at the end
@@ -42,66 +42,34 @@ List<Entry> get _filteredEntries {
 ---
 
 ### Step 3: Add the search field to the UI
-This step requires restructuring the `body` of your `Scaffold`. Replace the **entire** `body:` value (both the empty state and the ListView) with a new structure that has the search field at the top:
+You need to restructure the `body` of your Scaffold. Wrap everything in a `Column`: the search field at the top, and the feed below it wrapped in `Expanded` (so it fills the remaining space).
 
+Here's the search field — this is a new widget (`TextField` with `onChanged`), so use this code directly:
 ```dart
-body: Column(
-  children: [
-    Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: TextField(
-        decoration: const InputDecoration(
-          hintText: 'Search memories...',
-          prefixIcon: Icon(Icons.search),
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-        ),
-        onChanged: (value) {
-          setState(() => _searchQuery = value);
-        },
-      ),
+Padding(
+  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+  child: TextField(
+    decoration: const InputDecoration(
+      hintText: 'Search memories...',
+      prefixIcon: Icon(Icons.search),
+      border: OutlineInputBorder(),
     ),
-    Expanded(
-      child: _buildFeed(),
-    ),
-  ],
+    onChanged: (value) {
+      setState(() => _searchQuery = value);
+    },
+  ),
 ),
 ```
 
-Now extract the feed into a separate method. Add this inside `_HomeScreenState`:
-```dart
-Widget _buildFeed() {
-  final entries = _filteredEntries;
-  if (entries.isEmpty) {
-    // Show different messages for "no entries" vs "no search results"
-    if (_searchQuery.isEmpty) {
-      return const Center(child: Text('No memories yet. Tap + to create one!'));
-    }
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.search_off, size: 64, color: Colors.grey),
-          const SizedBox(height: 16),
-          Text('No results for "$_searchQuery"',
-              style: const TextStyle(color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-  return ListView.builder(
-    itemCount: entries.length,
-    itemBuilder: (context, index) {
-      return EntryCard(
-        entry: entries[index],
-        onDelete: () => _deleteEntry(_entries.indexOf(entries[index])),
-      );
-    },
-  );
-}
-```
+Now build the rest yourself using these hints:
 
-> **Important:** Notice `_entries.indexOf(entries[index])` in the delete callback — we need the index in the **original** list, not the filtered list. Otherwise, deleting while searching would remove the wrong entry!
+> **Hint 1:** Your `body` should be a `Column` with two children: the `Padding` containing the `TextField` above, and an `Expanded` widget wrapping the feed.
+
+> **Hint 2:** Extract the feed building logic into a `_buildFeed()` method that uses `_filteredEntries` instead of `_entries`.
+
+> **Hint 3:** In `_buildFeed()`, handle two empty states differently: if `_searchQuery.isEmpty` and the list is empty, show the normal "No memories yet" state. If `_searchQuery` is not empty and `_filteredEntries` is empty, show a "No results" message with `Icons.search_off`.
+
+> **Important:** When deleting from a filtered list, be careful — `index` in `_filteredEntries` is not the same as in `_entries`. Use `_entries.indexOf(entries[index])` to find the correct position in the original list. Otherwise, deleting while searching would remove the wrong entry!
 
 ---
 
@@ -114,14 +82,15 @@ Widget _buildFeed() {
 ---
 
 ## Optional extensions
-- Add a clear button (×) on the right of the search field (hint: add a `TextEditingController` and use `suffixIcon` with an `IconButton` that clears it)
+- Add a clear button (×) on the right side of the search field (hint: use `suffixIcon` with an `IconButton` + a `TextEditingController`)
+- Add search history — save the last 5 search terms using SharedPreferences and show them as suggestions
+- Search by tags too, not just title and text (hint: check if any tag in `entry.tags` contains the query)
 - Highlight the matched text in the results (hint: wrap the matching substring in a `TextSpan` with a yellow background)
-- Combine search with tag filters — show chips for each tag above the list, filter by both simultaneously
 - Add sort options: newest first / oldest first / alphabetical (hint: show a bottom sheet with `showModalBottomSheet`)
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|

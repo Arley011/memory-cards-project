@@ -2,8 +2,8 @@
 
 > **Before you start:** Make sure your Stage 5 track feature is working. If it's not, finish it first — this stage is about polishing, not building new features.
 
-## Today's goal
-Fix bugs, make the app reliable, and improve its visual quality so it is demo-ready tomorrow.
+## Goal
+Fix bugs, make the app reliable, and improve its visual quality so it is demo-ready for the final presentation.
 
 ## What the app will look like at the end
 Every core feature works reliably. The UI looks clean and consistent — good spacing, readable text, clear buttons. You can confidently show the app to someone without hitting a crash or a visual issue.
@@ -66,8 +66,31 @@ Pick 2–3 of these to improve:
 
 - Find any duplicated code and move it into a shared widget or function.
 - Check that all `TextEditingController` objects are disposed in `dispose()`.
-- Remove any unused imports (VS Code will show them in grey).
+- Remove any unused imports (Android Studio shows them in grey — press **Alt+Enter** to remove, or use **Ctrl+Alt+O** / **Cmd+Option+O** to optimize all imports at once).
 - Look for any TODOs you didn't complete and either finish them or remove the comment.
+
+---
+
+## Part 4 — Additional features (optional, for faster students)
+
+If you've fixed all the bugs and polished the UI, try adding one of these:
+
+**Dark mode toggle:**
+- Add a `ThemeMode` switch to your app (hint: `MaterialApp` has a `themeMode` parameter that accepts `ThemeMode.light`, `ThemeMode.dark`, or `ThemeMode.system`)
+- Store the user's preference in SharedPreferences so it survives restart
+- Add a toggle button in the AppBar or create a Settings screen (see below)
+
+**Settings screen:**
+If you didn't do Track C (notifications), consider creating a Settings screen that consolidates app preferences:
+- **Theme**: dark/light mode toggle using a `SwitchListTile`
+- **Tag management**: view all tags, delete unused ones (connects to the custom tag extension from Stage 4)
+- **About**: app version, your name, course info
+- Access it via a gear icon (`Icons.settings`) in the AppBar — same navigation pattern as Stage 2
+
+**Other ideas:**
+- Add an entry count indicator in the AppBar (e.g. "Memory Cards (12)")
+- Try different card shapes per tag category (hint: `Card`'s `shape` parameter + `RoundedRectangleBorder`)
+- Add a subtle animation when a new entry appears in the list (hint: `AnimatedList` instead of `ListView.builder`)
 
 ---
 

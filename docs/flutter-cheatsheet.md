@@ -353,4 +353,4 @@ Icons.favorite           // heart
 Icons.star               // star
 ```
 
-Browse all icons: search `Icons.` in VS Code and press `Ctrl+Space` for autocomplete.
+Browse all icons: type `Icons.` in Android Studio and press `Ctrl+Space` for autocomplete.

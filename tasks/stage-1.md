@@ -1,6 +1,6 @@
 # Stage 1 — First Screen + UI Basics
 
-## Today's goal
+## Goal
 Display a scrollable feed of memory cards using hardcoded sample data.
 
 ## What the app will look like at the end
@@ -37,7 +37,7 @@ final List<Entry> _entries = [];
 final List<Entry> _entries = List.from(sampleEntries);
 ```
 
-Save the file (Cmd+S / Ctrl+S) — the app should update automatically. If it doesn't, press `r` in the terminal where `flutter run` is running. You should now see 7 cards!
+The app should hot reload automatically. If it doesn't, press `r` in the terminal where `flutter run` is running. You should now see 7 cards!
 
 > **Hint:** `List.from(...)` creates a copy of the list so we can safely add/remove items later.
 
@@ -46,13 +46,13 @@ Save the file (Cmd+S / Ctrl+S) — the app should update automatically. If it do
 ### Step 2: Explore the card layout
 Open `lib/widgets/entry_card.dart`. This widget draws one card.
 
-Try these changes (one at a time — use hot reload after each!):
+Try these changes (one at a time — the app will hot reload after each!):
 - Change the title color: inside the `.copyWith(...)` for the title, add `color: Colors.deepPurple` next to `fontWeight: FontWeight.bold`
 - Change the `elevation` on the `Card` to `6` — what happens to the shadow?
 - Change `maxLines: 3` to `maxLines: 2` — what changes?
 - Add `const SizedBox(height: 12)` before the text preview `Text` widget (the one that shows `entry.text`) — does the spacing change?
 
-> **Hint:** After each change, save the file (Cmd+S / Ctrl+S). Hot reload happens automatically.
+> **Hint:** After each change, the app should hot reload automatically. If it doesn't, press `r` in the terminal or use the ⚡ hot reload button in the toolbar.
 
 ---
 
@@ -76,58 +76,30 @@ Pick the format you like most.
 ---
 
 ### Step 4: Style the card header
-Inside `entry_card.dart`, the title and date are stacked vertically (title on top, date below). Let's put them on the same line with the date pushed to the right.
+Right now in `entry_card.dart`, the title, SizedBox, and date are stacked vertically inside the Column — one below the other. We want the title and date to appear on the same line, with the title on the left and the date pushed to the right.
 
 First, create a variable to hold the formatted date. Add this line **inside** the `build` method, **before** the `return` statement:
 ```dart
 final dateString = DateFormat('dd MMM yyyy').format(entry.date);
 ```
 
-Then replace the title, SizedBox, and date block with a single `Row`:
+Now, modify the card layout. Here's what you need to do:
+- Replace the three widgets (title `Text`, `SizedBox`, and date `Text`) with a single `Row` widget
+- `Row` places its children horizontally. Use `MainAxisAlignment.spaceBetween` to push the date to the right
+- Wrap the title `Text` in an `Expanded` widget so it takes up the remaining space and doesn't push the date off screen
+- Add `overflow: TextOverflow.ellipsis` to the title `Text` so long titles are truncated with "..."
+- Use your `dateString` variable in the date `Text` instead of calling `DateFormat(...)` inline
 
+Here's the basic `Row` structure to guide you:
 ```dart
-// Replace this:
-            // Title
-            Text(
-              entry.title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 4),
-            // Date — formatted with intl package
-            Text(
-              DateFormat('dd MMM yyyy').format(entry.date),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
-                  ),
-            ),
-
-// With this:
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    entry.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  dateString,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey,
-                      ),
-                ),
-              ],
-            ),
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    // title widget here (wrapped in Expanded)
+    // date widget here
+  ],
+),
 ```
-
-Save and check — the title and date should now be side by side.
 
 > **Hint:** If you see a red error screen, check that you removed the old `Text` widgets and the `SizedBox` between them. The `Row` replaces all three.
 
@@ -137,37 +109,40 @@ Save and check — the title and date should now be side by side.
 When `_entries` is empty, the app shows a placeholder message. Find it in `home_screen.dart`.
 
 Improve it:
-- Change the icon to something more expressive (browse `Icons.` in VS Code for suggestions)
+- Change the icon to something more expressive (type `Icons.` in Android Studio and press `Ctrl+Space` to browse all available icons)
 - Change the message text to something friendlier
 - Add a subtitle line below the main message
 
 ---
 
-## VS Code tips
+## Android Studio tips
 
 These shortcuts will save you a lot of time:
 
-| Shortcut | What it does |
+| Shortcut (macOS) | What it does |
 |---|---|
-| **Cmd+S** (Ctrl+S) | Save the file — triggers hot reload automatically |
-| **Cmd+.** (Ctrl+.) | Quick Actions menu on the selected widget — wrap with Row/Column/Padding, extract to new widget, remove a widget, and more |
-| **Alt+Space** (Ctrl+Space) | Inside a widget's parentheses, shows all available parameters with descriptions |
-| **Cmd+Click** (Ctrl+Click) | Click on any widget or class name to jump to its source code / documentation |
+| **Cmd+\\** | Hot reload — apply code changes instantly |
+| **Cmd+Shift+\\** | Hot restart — restart the app from scratch |
+| **Alt+Enter** | Quick fix / intentions menu — wrap with widget, remove widget, add imports, and more |
+| **Ctrl+Space** | Code completion — shows all available parameters and options |
+| **Cmd+Click** | Navigate to source — jump to any widget or class definition |
+| **Double Shift** | Search everywhere — find files, classes, symbols |
+| **Cmd+Option+L** | Reformat code — fix indentation automatically |
 
-> Try it now: click on `Card` in `entry_card.dart`, then press **Cmd+Click** — you'll see all the parameters `Card` accepts!
+> Try it now: click on `Card` in `entry_card.dart`, then **Cmd+Click** — you'll see all the parameters `Card` accepts!
 
 ---
 
 ## Optional extensions
 - Extract the empty-state placeholder (the `Column` with icon + texts in `home_screen.dart`) into its own widget file `lib/widgets/empty_feed.dart` — practice creating a new file and importing it
 - Add an 8th sample entry to `sample_entries.dart` about your own Erasmus experience
-- Change the app's theme color in `main.dart` — find `Color(0xFF6750A4)` and try other hex colors (search "hex color picker" online)
+- Change the app's theme color in `main.dart` — find `Color(0xFF6750A4)` and try a different color. Type `Colors.` and press `Ctrl+Space` to see named colors (like `Colors.teal`), or find a hex color online and use `Color(0xFFxxxxxx)`
 - Add a thin color bar on the left edge of each card using a `Container` with `width: 4` and a `color`
 - Try different `Card` shapes: change `elevation`, add `shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))`
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|
@@ -180,4 +155,4 @@ These shortcuts will save you a lot of time:
 | `Text` + `TextStyle` | Shows text with custom font, size, color |
 | `DateFormat('pattern').format(date)` | Formats a DateTime as a String |
 | `maxLines` + `overflow: TextOverflow.ellipsis` | Truncates long text with "..." |
-| `Icons.some_name` | Material icon — browse with Ctrl+Space in VS Code |
+| `Icons.some_name` | Material icon — type `Icons.` and press `Ctrl+Space` in Android Studio |

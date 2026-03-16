@@ -5,7 +5,7 @@ This is **your base project**. You will build the Memory Cards app by expanding 
 ## How to get started
 
 1. Make sure Flutter is installed — see [../docs/setup.md](../docs/setup.md)
-2. Open the `starter/` folder in VS Code (`File → Open Folder`)
+2. Open the `starter/` folder in Android Studio (`File → Open`)
 3. Run `flutter pub get` in the terminal
 4. Connect a device or start an emulator
 5. Run `flutter run`
@@ -28,17 +28,17 @@ lib/
 └── utils/                  ← Helper functions (you'll add storage.dart here in Stage 3)
 ```
 
-## Daily task sheets
+## Task sheets
 
-| Day | Task file |
-|-----|-----------|
-| 1 — First screen + UI | [../tasks/stage-1.md](../tasks/stage-1.md) |
-| 2 — Create entry flow | [../tasks/stage-2.md](../tasks/stage-2.md) |
-| 3 — Persistence | [../tasks/stage-3.md](../tasks/stage-3.md) |
-| 4 — Tags + polish | [../tasks/stage-4.md](../tasks/stage-4.md) |
-| 5 — Choose a track | [../tasks/stage-5.md](../tasks/stage-5.md) |
-| 6 — Bug fixing + polish | [../tasks/stage-6.md](../tasks/stage-6.md) |
-| 7 — Final demo + Git | [../tasks/stage-7.md](../tasks/stage-7.md) |
+| Stage | Task file |
+|-------|-----------|
+| Stage 1 — First screen + UI | [../tasks/stage-1.md](../tasks/stage-1.md) |
+| Stage 2 — Create entry flow | [../tasks/stage-2.md](../tasks/stage-2.md) |
+| Stage 3 — Persistence | [../tasks/stage-3.md](../tasks/stage-3.md) |
+| Stage 4 — Tags + polish | [../tasks/stage-4.md](../tasks/stage-4.md) |
+| Stage 5 — Choose a track | [../tasks/stage-5.md](../tasks/stage-5.md) |
+| Stage 6 — Bug fixing + polish | [../tasks/stage-6.md](../tasks/stage-6.md) |
+| Stage 7 — Final demo + Git | [../tasks/stage-7.md](../tasks/stage-7.md) |
 
 ## Stuck?
 

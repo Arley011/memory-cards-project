@@ -1,6 +1,6 @@
 # Stage 5 — Track A: Photo Attachment
 
-## Today's goal
+## Goal
 Allow users to attach a photo to a memory entry, and show a thumbnail on the card.
 
 ## What the app will look like at the end
@@ -42,11 +42,7 @@ String? _imagePath;
 ---
 
 ### Step 3: Add the photo picker
-Add these imports at the top of `create_entry_screen.dart`:
-```dart
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-```
+You'll need to import `image_picker` and `dart:io` — when Android Studio shows red underlines on `ImagePicker` or `File`, press **Alt+Enter** to auto-import them.
 
 Add a method to pick a photo inside `_CreateEntryScreenState`, before the `build` method:
 ```dart
@@ -62,31 +58,15 @@ Future<void> _pickPhoto() async {
 }
 ```
 
-Add the button + preview inside the `children` list in your form's `Column`, after the tag chips (or after the date picker if you skipped Stage 4):
-```dart
-const SizedBox(height: 16),
-if (_imagePath != null)
-  ClipRRect(
-    borderRadius: BorderRadius.circular(8),
-    child: Image.file(
-      File(_imagePath!),
-      height: 200,
-      width: double.infinity,
-      fit: BoxFit.cover,
-    ),
-  )
-else
-  OutlinedButton.icon(
-    onPressed: _pickPhoto,
-    icon: const Icon(Icons.photo_library),
-    label: const Text('Add Photo'),
-  ),
-if (_imagePath != null)
-  TextButton(
-    onPressed: () => setState(() => _imagePath = null),
-    child: const Text('Remove photo'),
-  ),
-```
+Now add a section in your form's `Column` (after the tag chips, or after the date picker if you skipped Stage 4) that shows either a photo preview or an "Add Photo" button. Build this yourself using these hints:
+
+> **Hint 1:** Use an `if (_imagePath != null) ... else ...` pattern — same conditional widget logic you used in earlier stages.
+
+> **Hint 2:** For the preview, use `Image.file(File(_imagePath!))` wrapped in `ClipRRect` for rounded corners. Set `height: 200`, `width: double.infinity`, `fit: BoxFit.cover`.
+
+> **Hint 3:** For the button, use `OutlinedButton.icon` with `Icons.photo_library` as the icon and `'Add Photo'` as the label. Call `_pickPhoto` when pressed.
+
+> **Hint 4:** Add a "Remove photo" `TextButton` below the preview so users can change their mind — it should set `_imagePath` back to `null` using `setState`.
 
 ---
 
@@ -106,40 +86,30 @@ final newEntry = Entry(
 ---
 
 ### Step 5: Show thumbnail on the card
-In `entry_card.dart`, add the import at the top:
-```dart
-import 'dart:io';
-```
+Add the photo as the first item in the card's `Column`, before the title. When Android Studio shows a red underline on `File`, press **Alt+Enter** to import `dart:io`.
 
-Now add the photo above the title inside the `Column`'s `children` list (as the first item, before the title `Text` or `Row`):
-```dart
-if (entry.imagePath != null) ...[
-  ClipRRect(
-    borderRadius: BorderRadius.circular(8),
-    child: Image.file(
-      File(entry.imagePath!),
-      height: 160,
-      width: double.infinity,
-      fit: BoxFit.cover,
-    ),
-  ),
-  const SizedBox(height: 8),
-],
-```
+Build this yourself using these hints:
+
+> **Hint 1:** Use `if (entry.imagePath != null) ...[...]` for conditional rendering — this is the same spread pattern you used for tags in Stage 4.
+
+> **Hint 2:** Use `Image.file`, `ClipRRect`, and `BoxFit.cover` — the same approach as the preview in the form. Use a `height` of `160` and `width: double.infinity`.
+
+> **Hint 3:** Add a `SizedBox(height: 8)` after the image to add spacing before the title.
 
 > **Note:** The image will be slightly inset because it's inside the card's `Padding`. That's fine! If you want an edge-to-edge image, you would need to restructure the card layout — try this as a challenge if you finish early.
 
 ---
 
 ## Optional extensions
-- Add a second button to take a photo with the camera (`ImageSource.camera`)
-- Show the photo in full screen when tapped (`Navigator.push` with a new screen that shows `Image.file`)
+- Add a second button to take a photo with the camera (`ImageSource.camera`) — does it work on the emulator?
+- Add a "pinch to zoom" on the photo when tapped (hint: open a new screen with `InteractiveViewer` widget wrapping the full-size image)
+- Show a placeholder icon (like `Icons.image_outlined`) on cards that have no photo, to visually distinguish them
 - Allow replacing the photo (show the picker button even when a photo is already selected)
 - Add a caption field that appears only when a photo is attached
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|

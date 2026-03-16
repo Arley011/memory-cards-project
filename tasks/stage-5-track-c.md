@@ -1,6 +1,6 @@
 # Stage 5 — Track C: Daily Reminder
 
-## Today's goal
+## Goal
 Add a Settings screen with a toggle that enables a daily local notification reminding the user to write a memory. The reminder state is persisted so it survives app restarts.
 
 ## What the app will look like at the end
@@ -173,7 +173,7 @@ void main() async {
 ---
 
 ### Step 4: Create the settings screen
-Create `lib/screens/settings_screen.dart`:
+Create `lib/screens/settings_screen.dart`. Start with the class boilerplate, state variables, and the logic methods:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -218,72 +218,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: Column(
-        children: [
-          SwitchListTile(
-            title: const Text('Daily reminder'),
-            subtitle: Text(
-              _reminderEnabled
-                  ? 'Reminder set for ${_reminderTime.format(context)}'
-                  : 'Off',
-            ),
-            value: _reminderEnabled,
-            onChanged: _toggleReminder,
-          ),
-          if (_reminderEnabled)
-            ListTile(
-              title: const Text('Reminder time'),
-              trailing: Text(_reminderTime.format(context)),
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: _reminderTime,
-                );
-                if (picked != null) {
-                  setState(() => _reminderTime = picked);
-                  NotificationService.instance.scheduleReminder(
-                    picked.hour,
-                    picked.minute,
-                  );
-                }
-              },
-            ),
-        ],
-      ),
-    );
-  }
+  // TODO: Build the UI below
 }
 ```
+
+Now build the `build` method yourself. Create a `Scaffold` with an AppBar titled "Settings" and a `Column` body. Use these hints:
+
+> **Hint 1:** Use `SwitchListTile` — a list tile with a built-in toggle switch. Set `title: const Text('Daily reminder')`, `value: _reminderEnabled`, and `onChanged: _toggleReminder`. For the `subtitle`, show the time when enabled (e.g. `'Reminder set for ${_reminderTime.format(context)}'`) or `'Off'` when disabled.
+
+> **Hint 2:** When the reminder is enabled, show a `ListTile` with the time that opens `showTimePicker` on tap. You already used `showDatePicker` in Stage 2 — `showTimePicker` works the same way. Pass `initialTime: _reminderTime`, then update the state and call `scheduleReminder` with the picked time.
+
+> **Hint 3:** Use `if (_reminderEnabled)` before the `ListTile` to conditionally show it — same pattern as conditional widgets in earlier stages.
 
 ---
 
 ### Step 5: Add the settings button to the AppBar
-In `home_screen.dart`, add an import at the top:
-```dart
-import 'settings_screen.dart';
-```
+You already know how to add an icon button to the AppBar and navigate to a new screen (you did this in Stage 2 with the Create Entry screen). Do the same here — add a settings icon (`Icons.settings`) to the `actions` list in the `AppBar` in `home_screen.dart`, and navigate to `SettingsScreen` when tapped.
 
-Then add an `actions` button to the `AppBar`:
-```dart
-appBar: AppBar(
-  title: const Text('Memory Cards'),
-  actions: [
-    IconButton(
-      icon: const Icon(Icons.settings),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const SettingsScreen()),
-        );
-      },
-    ),
-  ],
-),
-```
+When Android Studio shows a red underline on `SettingsScreen`, press **Alt+Enter** to auto-import it.
 
 ---
 
@@ -297,14 +249,15 @@ appBar: AppBar(
 ---
 
 ## Optional extensions
+- Add a "Test notification" button that fires a notification immediately (great for debugging)
+- Show "Last entry was X days ago" on the settings screen to motivate writing (hint: compare the most recent entry's date with `DateTime.now()`)
+- Let the user customize the notification message text (store it in SharedPreferences)
 - Add the ability to set multiple reminders (morning + evening) — use different notification IDs
 - When the notification is tapped, open the app directly to the Create Entry screen
-- Show a preview of the next scheduled notification time ("Next reminder: today at 8:00 PM")
-- Add a "Test notification" button that fires a notification immediately (great for debugging)
 
 ---
 
-## Useful Flutter widgets/functions today
+## Useful Flutter widgets/functions
 
 | Widget / concept | What it does |
 |---|---|
