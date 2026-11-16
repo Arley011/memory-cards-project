@@ -18,18 +18,13 @@ The Create Entry screen has an "Add Photo" button. When tapped, the device galle
 
 ### Step 1: Required permissions
 
-**Android** — open `starter/android/app/src/main/AndroidManifest.xml` and add inside the `<manifest>` tag (before `<application>`):
-```xml
-<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-```
+**Android** — nothing to add. `image_picker` opens the system photo picker, which needs no permission.
 
 **iOS** — open `starter/ios/Runner/Info.plist` and add inside the `<dict>` tag:
 ```xml
 <key>NSPhotoLibraryUsageDescription</key>
 <string>We need access to your photo library to attach images to your memories.</string>
 ```
-
-> **Note:** `READ_MEDIA_IMAGES` works on Android 13+. If you're testing on an older Android version, use `READ_EXTERNAL_STORAGE` instead.
 
 ---
 
@@ -101,6 +96,7 @@ Build this yourself using these hints:
 ---
 
 ## Optional extensions
+- **Keep photos safe (challenge):** the picker gives you a path in the app's temporary (cache) folder, and Android may clean this folder up. Copy the file into the app's documents folder and save that path instead (package `path_provider`, function `getApplicationDocumentsDirectory()`).
 - Add a second button to take a photo with the camera (`ImageSource.camera`) — does it work on the emulator?
 - Add a "pinch to zoom" on the photo when tapped (hint: open a new screen with `InteractiveViewer` widget wrapping the full-size image)
 - Show a placeholder icon (like `Icons.image_outlined`) on cards that have no photo, to visually distinguish them

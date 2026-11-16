@@ -74,7 +74,7 @@ Now build the rest yourself using these hints:
 ---
 
 ### Step 4: Verify it works
-- Type "Gut Wehlitz" → only the arrival entry shows
+- Type a word from the title of one of your entries → only matching entries show
 - Type a word from an entry's text → the entry still shows
 - Clear the search → all entries come back
 - Search for something that doesn't exist → "no results" message appears

@@ -1,5 +1,9 @@
 # Environment Setup Guide
 
+> **In the lab:** the lab computers use a prepared setup. Follow the lab setup guide from your trainer, not this page. This page is for your own Mac.
+
+**Version needed:** Flutter **3.35 or newer**. Check with `flutter --version`.
+
 This guide walks you through installing everything you need to run Flutter apps on your Mac laptop.
 
 **What you will install:**
@@ -11,7 +15,7 @@ This guide walks you through installing everything you need to run Flutter apps 
 
 ## Step 1 — Install Android Studio
 
-1. Download from [developer.android.com/studio](https://developer.android.com/studio)
+1. Download from [developer.android.com/studio](https://developer.android.com/studio) — choose **Mac with Apple chip** or **Mac with Intel chip** to match your Mac
 2. Open the downloaded file and drag Android Studio into your Applications folder
 3. Open Android Studio
 4. Complete the **initial setup wizard** — click through with the default options. This automatically downloads the Android SDK (a large download, be patient)
@@ -75,7 +79,7 @@ You need something to run your app on. Pick one of these options:
 6. Click the **▶ play button** next to your new device to start the emulator
 7. A virtual phone should appear on your screen — this is where your app will run!
 
-**Option B — iOS Simulator:**
+**Option B — iOS Simulator** (needs a current Xcode — not possible on the lab iMacs):
 
 1. Install **Xcode** from the Mac App Store (large download — ~10 GB)
 2. Open Terminal and run these two commands:
@@ -90,7 +94,7 @@ open -a Simulator
 
 **Option C — Physical Android device** (see the "Connecting a physical Android device" section below)
 
-**Option D — Physical iPhone/iPad:**
+**Option D — Physical iPhone/iPad** (not possible on the lab iMacs):
 This requires Xcode, a USB cable, and some extra configuration (provisioning profiles). Ask your mentor if you'd like to try this.
 
 ---

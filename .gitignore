@@ -1,0 +1,9 @@
+# macOS and IDE files
+.DS_Store
+.idea/
+
+# Flutter / Dart generated files
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/build/

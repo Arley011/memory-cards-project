@@ -142,6 +142,7 @@ flutter run
 
 **When you need hot restart** (press `R` in terminal or the restart button in the IDE toolbar):
 - You added a new `initState()` method
+- You changed the starting value of a state variable (e.g. `_entries = ...`)
 - You changed `main()` or app initialization code
 - You added a new package
 - State variable type changed
@@ -195,7 +196,7 @@ if (mounted) {
    final picked = await picker.pickImage(...);
    ```
 2. Check `picked` is not null before using `picked.path`
-3. On Android: make sure you added the READ_MEDIA_IMAGES permission in AndroidManifest.xml
+3. If an older photo is suddenly missing: the picker stores photos in a temporary folder that Android may clean up — see the "Keep photos safe" extension in Stage 5 Track A
 4. Test on a real device or emulator — simulators may have limited gallery access
 
 ---

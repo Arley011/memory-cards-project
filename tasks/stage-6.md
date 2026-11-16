@@ -20,7 +20,7 @@ Work through this list. For each item, test it on the device and fix any issues 
 - [ ] Delete an entry → it disappears from the feed and doesn't come back after restart
 - [ ] Create an entry with no title → the validation error message appears
 - [ ] Navigate to Create Entry and press Back without saving → no empty entry is added
-- [ ] Pick a date using the date picker → future dates should not be selectable
+- [ ] Pick a date using the date picker → it works the way you decided in Stage 2 (future dates allowed or not)
 
 **UI edge cases:**
 - [ ] Create an entry with a very long title (100+ characters) → the card handles it gracefully (truncation or wrapping)

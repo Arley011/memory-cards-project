@@ -110,7 +110,7 @@ Here is what you need to do:
 - Use `if (entry.tags.isNotEmpty) ...[...]` to only show tags when they exist
 - Inside, add a `SizedBox(height: 8)` for spacing, then a `Wrap` widget with `spacing: 4` and `runSpacing: 4`
 - Map each tag to a `Chip` widget (similar to how you used `.map().toList()` in Step 3)
-- Use `backgroundColor: _tagColor(tag).withOpacity(0.2)` and `side: BorderSide(color: _tagColor(tag))` on the `Chip` for a subtle colored look
+- Use `backgroundColor: _tagColor(tag).withValues(alpha: 0.2)` and `side: BorderSide(color: _tagColor(tag))` on the `Chip` for a subtle colored look
 
 Create a `_tagColor(String tag)` helper method inside the `EntryCard` class (before the `build` method) that returns a `Color` based on the tag name. Use a `Map` to associate each tag with a color:
 
@@ -169,6 +169,6 @@ Go through the app and improve visual consistency:
 | `set.add(item)` / `set.remove(item)` | Add or remove from a Set |
 | `set.contains(item)` | Check if item is in the Set |
 | `set.toList()` | Convert Set to List |
-| `color.withOpacity(0.2)` | Make a color semi-transparent |
+| `color.withValues(alpha: 0.2)` | Make a color semi-transparent (20% visible) |
 | `...` (spread operator) | Insert multiple items into a list |
 | `if (condition) ...[ widgets ]` | Conditionally include widgets in a list |

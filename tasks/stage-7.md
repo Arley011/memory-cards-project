@@ -85,11 +85,13 @@ After the commit, run `git status` — it should say "nothing to commit".
 ---
 
 ### Step 5: Push to GitHub
-Copy the commands from the GitHub page (they look like this — use YOUR version from GitHub):
+Your project was cloned from the course repository, so it is already connected to it under the name `origin`. Point `origin` to **your** new repository (copy the address from the GitHub page):
 ```
-git remote add origin https://github.com/YOUR_USERNAME/memory-cards.git
+git remote set-url origin https://github.com/YOUR_USERNAME/memory-cards.git
 git push -u origin main
 ```
+
+Check with `git remote -v` — it must show your username, not the course repository.
 
 > **Trouble?** If you get an error about `main`, try `git push -u origin master` instead — some Git versions use `master` as the default branch name.
 

@@ -43,7 +43,9 @@ Let's fill the list with sample entries so we have something to look at.
 final List<Entry> _entries = List.from(sampleEntries);
 ```
 
-The app should hot reload and show 7 cards.
+Now press **hot restart** (`Cmd+Shift+\` in Android Studio, or `R` in the terminal). The app shows 7 cards.
+
+> **Why not hot reload?** Hot reload keeps the current state of the screen. The list was already created as an empty list, so hot reload does not create it again. Hot restart starts the app from the beginning.
 
 > **Why `List.from(...)`?** It creates a **copy** of the list. If we used `sampleEntries` directly, any changes (like adding or deleting entries later) would modify the original data. Open `lib/data/sample_entries.dart` to see what the sample data looks like — read a few entries. These are stories from a fictional Erasmus trip.
 

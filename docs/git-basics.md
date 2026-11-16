@@ -92,14 +92,14 @@ If you haven't connected your project to GitHub yet, do this first:
 1. Go to [github.com](https://github.com) and create a free account
 2. Click **+** in the top-right → **New repository**
 3. Name it `memory-cards`, leave it Public, click **Create repository**
-4. GitHub shows you two commands — run them in your terminal:
+4. Your project was cloned from the course repository, so `origin` already points there. Point it to your new repository:
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/memory-cards.git
+git remote set-url origin https://github.com/YOUR_USERNAME/memory-cards.git
 git push -u origin main
 ```
 
-Replace `YOUR_USERNAME` with your actual GitHub username.
+Replace `YOUR_USERNAME` with your actual GitHub username. Check with `git remote -v`.
 
 After this, future pushes only need `git push`.
 
@@ -108,7 +108,10 @@ After this, future pushes only need `git push`.
 ## Common error messages
 
 **`remote origin already exists`**
-The remote is already set. Run `git remote -v` to see what it points to.
+The remote is already set. Run `git remote -v` to see what it points to. If it shows the course repository (`Arley011/memory-cards-project`), run `git remote set-url origin https://github.com/YOUR_USERNAME/memory-cards.git`.
+
+**`Permission denied` / `403` when pushing**
+You are probably pushing to the course repository. Check `git remote -v` and fix it as above.
 
 **`failed to push some refs`**
 Your local code is behind the remote. This shouldn't happen in our setup since only you are pushing. If it does: `git pull origin main --rebase`, then push again.

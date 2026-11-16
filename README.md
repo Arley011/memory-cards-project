@@ -8,7 +8,7 @@ Each entry in the app has a **title**, a **short text**, and a **date**. Over th
 
 ## Quick start
 
-1. **Install Flutter + Android Studio** → [docs/setup.md](docs/setup.md)
+1. **Install Flutter (3.35 or newer) + Android Studio** → [docs/setup.md](docs/setup.md). In the lab, follow the lab setup guide from your trainer instead.
 2. **Clone or fork this repository**
 3. Open the `starter/` folder in Android Studio
 4. Run `flutter pub get` in the terminal
@@ -43,7 +43,7 @@ Each entry in the app has a **title**, a **short text**, and a **date**. Over th
 
 ## Examples
 
-Short, focused reference files — look here when you are stuck on a concept:
+Short, focused reference files — look here when you are stuck on a concept. They are for **reading**: the `examples/` folder is not set up to run on a phone. To try one, create a new project (`flutter create try_it`), paste the example into `lib/main.dart` and run it.
 
 | Folder | What it shows |
 |--------|---------------|

@@ -24,6 +24,8 @@ A settings icon in the AppBar opens a Settings screen. There, a switch turns the
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 <uses-permission android:name="android.permission.VIBRATE"/>
 <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32"/>
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 ```
 
 And inside `<application>`:
@@ -47,7 +49,7 @@ And inside `<application>`:
 
 > **Note:** On iOS, you need **iOS 16 Simulator or newer** (Xcode 14+) for local notifications to work. Android emulator works regardless of version.
 
-> **Note:** On Android 14+ physical devices, the `USE_EXACT_ALARM` permission may require the user to grant it manually in system settings. On emulators it's auto-granted.
+> **Note:** On Android 13+ the user must allow notifications. Your app asks for this when the reminder is switched on (Step 4). If the user says no, notifications will not appear.
 
 ---
 
@@ -76,12 +78,24 @@ class NotificationService {
   /// Call this once when the app starts (in main.dart)
   Future<void> init() async {
     tz.initializeTimeZones();
+    // The timezone package starts in UTC. Set the local time zone of the course
+    // (Germany) — otherwise the reminder arrives one or two hours late.
+    tz.setLocalLocation(tz.getLocation('Europe/Berlin'));
 
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings();
     await _plugin.initialize(
       const InitializationSettings(android: androidSettings, iOS: iosSettings),
     );
+  }
+
+  /// Ask the user to allow notifications (needed on Android 13+).
+  /// Returns true if notifications are allowed.
+  Future<bool> requestPermission() async {
+    final android = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    final granted = await android?.requestNotificationsPermission();
+    return granted ?? true;
   }
 
   /// Read the saved reminder state from storage
@@ -137,6 +151,8 @@ class NotificationService {
         iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
     );
   }
@@ -206,16 +222,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  void _toggleReminder(bool enabled) {
-    setState(() => _reminderEnabled = enabled);
+  Future<void> _toggleReminder(bool enabled) async {
+    final service = NotificationService.instance;
     if (enabled) {
-      NotificationService.instance.scheduleReminder(
-        _reminderTime.hour,
-        _reminderTime.minute,
-      );
+      // Android 13+ asks the user to allow notifications
+      final allowed = await service.requestPermission();
+      if (!allowed) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please allow notifications for this app.')),
+        );
+        return; // keep the switch off
+      }
+      await service.scheduleReminder(_reminderTime.hour, _reminderTime.minute);
     } else {
-      NotificationService.instance.cancelReminder();
+      await service.cancelReminder();
     }
+    if (!mounted) return;
+    setState(() => _reminderEnabled = enabled);
   }
 
   // TODO: Build the UI below

@@ -91,12 +91,12 @@ final List<Entry> _entries = List.from(sampleEntries);
 List<Entry> _entries = [];
 ```
 
-> **Note:** You can keep the `import '../data/sample_entries.dart';` line — you'll need it again in Stage 4 for the tag list.
+> **Note:** `home_screen.dart` no longer uses the sample data, so Android Studio shows the `import '../data/sample_entries.dart';` line in grey. Remove it. In Stage 4 you will import the tag list in `create_entry_screen.dart`.
 
 ---
 
 ### Step 4: Save after every change
-Every time `_entries` changes, call `saveEntries`. In the FAB `onPressed` callback (where you add a new entry), add a save call right after the `setState`:
+Every time `_entries` changes, call `saveEntries`. In your `_openCreateScreen()` method from Stage 2 (where you add a new entry), add a save call right after the `setState`:
 ```dart
 setState(() => _entries.insert(0, newEntry));
 saveEntries(_entries); // Save after adding
